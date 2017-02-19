@@ -1,0 +1,32 @@
+server:
+    image: zhongpei/ocserv
+    volumes:
+        - "./ocserv:/etc/ocserv"
+        - "./certs:/opt/certs"
+    ports:
+        - "443:443"
+        - "443:443/udp"
+    privileged: true
+    restart: always
+
+nginx-proxy:
+    image: jwilder/nginx-proxy
+    net: bridge
+    ports:
+      - "1180:80"
+      - "11443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+
+letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - ./certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+      - nginx-proxy
+    restart: always
