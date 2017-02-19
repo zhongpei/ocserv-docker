@@ -3,6 +3,7 @@ server:
     volumes:
         - "./ocserv:/etc/ocserv"
         - "./certs:/opt/certs"
+    env_file: ./.env
     ports:
         - "443:443"
         - "443:443/udp"
